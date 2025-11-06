@@ -123,13 +123,23 @@
   // ====== EXPORTAR GLB ======
   function exportGLB() {
     const exporter = new GLTFExporter();
-    exporter.parse(scene, function(result) {
-      const blob = new Blob([JSON.stringify(result)], { type: 'application/octet-stream' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'modelo_zen_ultrarealista.glb';
-      link.click();
-    }, { binary: true });
+    exporter.parse(
+      scene,
+      function(result) {
+        let output;
+        if (result instanceof ArrayBuffer) {
+          output = new Blob([result], { type: 'application/octet-stream' });
+        } else {
+          const json = JSON.stringify(result, null, 2);
+          output = new Blob([json], { type: 'application/json' });
+        }
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(output);
+        link.download = 'modelo_zen.glb';
+        link.click();
+      },
+      { binary: true }
+    );
   }
 
   document.getElementById('exportBtn').addEventListener('click', exportGLB);
@@ -140,7 +150,6 @@
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
-
 </script>
 
 </body>
